@@ -1,0 +1,25 @@
+# UX Acceptance Checklist
+
+- [ ] Citizen can submit in under 30 seconds without seeing the full official Jenis Aduan checklist.
+- [ ] Complaint record stores `rasmiJenisAduan` exactly from official Majlis list.
+- [ ] Complaint record stores `rasmiSaluranAduan = "Sistem e-Aduan"` for web submissions.
+- [ ] Complaint record stores citizen-friendly fields (`citizen*`) and official fields (`rasmi*`) together.
+- [ ] Submit page supports 3-step flow:
+  - [ ] A) Apa berlaku?
+  - [ ] B) Di mana?
+  - [ ] C) Bukti (pilihan)
+- [ ] Submit page includes optional Quick Category 6 tiles and AI still works when skipped.
+- [ ] Submit page includes Anonymous mode; validation enforces phone OR email when anonymous.
+- [ ] Submit page includes confirmation checkbox and stores `rasmiTandatanganPengadu`.
+- [ ] Official Form Mapping Preview is visible before submit.
+- [ ] Demo prefill scenarios work:
+  - [ ] Lampu Awam (Jalan Apas)
+  - [ ] Longkang Tersumbat (Balung)
+  - [ ] Perkhidmatan Sampah (Bandar)
+- [ ] Track page shows citizen-friendly 3-step status (Diterima -> Dalam Tindakan -> Selesai).
+- [ ] Track page shows `Kategori Rasmi (Majlis)` but does not expose internal officer codes.
+- [ ] Admin table shows `rasmiJenisAduan` alongside AI category.
+- [ ] Admin detail allows editing `rasmiPegawaiBertanggungjawab`.
+- [ ] Admin detail allows editing `Maklumat Tindakan` fields.
+- [ ] When status is marked `DONE`, `rasmiMaklumatTindakan.statusRasmi` becomes `Selesai` and `tarikhTindakan` auto-fills if empty.
+- [ ] Demo Mode works without API key using deterministic mapping rules.
