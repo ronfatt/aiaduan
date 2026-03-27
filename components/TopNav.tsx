@@ -34,7 +34,7 @@ export function TopNav() {
   );
   const isImmersivePublicPage =
     pathname === "/submit" || pathname === "/track" || pathname.startsWith("/track/") || pathname === "/assistant";
-  const showPublicBottomBar = !isAdminPage && !isImmersivePublicPage;
+  const showPublicBottomBar = !isAdminPage && !isImmersivePublicPage && pathname !== "/";
   const isHomePage = pathname === "/";
 
   const desktopLinks = [
@@ -55,23 +55,38 @@ export function TopNav() {
           </div>
 
           <div className="flex items-center gap-2">
-            {!isHomePage ? (
+            {isHomePage ? (
+              <label className="sm:hidden">
+                <span className="sr-only">{t("nav_language")}</span>
+                <select
+                  value={locale}
+                  onChange={(e) => setLocale(e.target.value as "en" | "ms" | "zh")}
+                  className="min-h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-bold text-white backdrop-blur"
+                >
+                  <option value="ms" className="text-black">MS</option>
+                  <option value="en" className="text-black">EN</option>
+                  <option value="zh" className="text-black">中文</option>
+                </select>
+              </label>
+            ) : (
               <Link
                 href="/submit"
                 className="inline-flex min-h-11 items-center rounded-xl bg-[#2D6BFF] px-4 py-2 text-sm font-extrabold text-white shadow-lg shadow-blue-900/30 sm:hidden"
               >
                 {t("nav_submit")}
               </Link>
+            )}
+            {!isHomePage ? (
+              <button
+                type="button"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/25 bg-white/10 px-3 text-sm font-bold text-white sm:hidden"
+                aria-expanded={menuOpen}
+                aria-label="Toggle navigation"
+                onClick={() => setMenuOpen((value) => !value)}
+              >
+                {menuOpen ? "Tutup" : "Menu"}
+              </button>
             ) : null}
-            <button
-              type="button"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/25 bg-white/10 px-3 text-sm font-bold text-white sm:hidden"
-              aria-expanded={menuOpen}
-              aria-label="Toggle navigation"
-              onClick={() => setMenuOpen((value) => !value)}
-            >
-              {menuOpen ? "Tutup" : "Menu"}
-            </button>
           </div>
         </div>
 
@@ -239,6 +254,17 @@ export function TopNav() {
               </Link>
             );
           })}
+        </div>
+      ) : null}
+
+      {isHomePage ? (
+        <div className="sticky-landing-cta-wrap fixed inset-x-0 bottom-0 z-30 px-4 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-3 sm:hidden">
+          <Link
+            href="/submit"
+            className="sticky-landing-cta flex min-h-14 w-full items-center justify-center rounded-[18px] px-4 text-base font-extrabold text-white"
+          >
+            Hantar Aduan
+          </Link>
         </div>
       ) : null}
     </header>

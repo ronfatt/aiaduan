@@ -106,42 +106,75 @@ export default function HomePage() {
       .slice(0, 3);
   }, [complaints]);
 
-  const transparency = useMemo(() => {
-    const weekMs = 7 * 24 * 3600 * 1000;
-    const thisWeek = complaints.filter((item) => nowMs - new Date(item.createdAt).getTime() <= weekMs);
-    const prevWeek = complaints.filter((item) => {
-      const diff = nowMs - new Date(item.createdAt).getTime();
-      return diff > weekMs && diff <= weekMs * 2;
-    });
-    const thisOverdue = thisWeek.filter((item) => item.status !== "DONE" && isOverdue(item)).length;
-    const prevOverdue = prevWeek.filter((item) => item.status !== "DONE" && isOverdue(item)).length;
-    const overdueDelta = prevOverdue ? Math.round(((thisOverdue - prevOverdue) / prevOverdue) * 100) : 0;
-    return {
-      handledThisWeek: thisWeek.filter((item) => item.status === "DONE").length,
-      avgResponse: publicStats.avgResponseHours,
-      overdueDelta,
+  const statusOverview = useMemo(() => {
+    const resolved = complaints.filter((item) => item.status === "DONE");
+    const inProgress = complaints.filter(
+      (item) => item.status === "ASSIGNED" || item.status === "IN_PROGRESS",
+    );
+    const newlyOpened = complaints.filter((item) => item.status === "RECEIVED");
+
+    const thisDayMs = 24 * 60 * 60 * 1000;
+    const prevDayMs = thisDayMs * 2;
+
+    const computeDelta = (items: typeof complaints) => {
+      const today = items.filter((item) => nowMs - new Date(item.createdAt).getTime() <= thisDayMs).length;
+      const yesterday = items.filter((item) => {
+        const diff = nowMs - new Date(item.createdAt).getTime();
+        return diff > thisDayMs && diff <= prevDayMs;
+      }).length;
+      return today - yesterday;
     };
-  }, [complaints, nowMs, publicStats.avgResponseHours]);
+
+    return [
+      {
+        key: "resolved",
+        title: "Selesai",
+        label: "Kes Diselesaikan",
+        value: resolved.length,
+        delta: computeDelta(resolved),
+        tone: "emerald",
+      },
+      {
+        key: "in-progress",
+        title: "Sedang Diproses",
+        label: "Dalam Tindakan",
+        value: inProgress.length,
+        delta: computeDelta(inProgress),
+        tone: "amber",
+      },
+      {
+        key: "new",
+        title: "Aduan Baru",
+        label: "Menunggu Tindakan",
+        value: newlyOpened.length,
+        delta: computeDelta(newlyOpened),
+        tone: "red",
+      },
+    ] as const;
+  }, [complaints, nowMs]);
 
   return (
-    <div className="grid gap-4">
-      <section className="panel neural-grid overflow-hidden lg:grid lg:grid-cols-2 lg:items-center">
+    <div className="grid gap-4 pb-24 sm:pb-0">
+      <section className="hero-shell panel neural-grid overflow-hidden rounded-[28px] border-none px-5 py-7 shadow-[0_18px_44px_rgba(13,31,59,0.18)] sm:px-6 sm:py-8 lg:grid lg:grid-cols-2 lg:items-center">
+        <div className="hero-orb hero-orb-one" />
+        <div className="hero-orb hero-orb-two" />
+        <div className="hero-streak" />
         <div className="relative z-10 text-center sm:text-left">
-          <p className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-blue-900">
+          <p className="inline-flex rounded-full bg-white/12 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-100 backdrop-blur">
             Aduan Pintar Tawau
           </p>
-          <h1 className="mt-3 text-3xl font-black leading-tight text-[#0B1F3B] sm:text-4xl">
+          <h1 className="mt-4 text-4xl font-black leading-[1.05] text-white sm:text-5xl">
             Ada Masalah di Tawau?
             <br />
             Kami Bertindak.
           </h1>
-          <p className="mt-3 text-base font-semibold text-[#1d4ed8] sm:text-lg">
+          <p className="mx-auto mt-4 max-w-xl text-base font-semibold text-blue-100 sm:mx-0 sm:text-lg">
             Laporkan dalam 30 saat.
             <br />
             AI akan terus hantar ke jabatan berkaitan.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link href="/submit" className="hero-main-cta">HANTAR ADUAN SEKARANG</Link>
+            <Link href="/submit" className="hero-main-cta">Hantar Aduan Sekarang</Link>
             <Link href="/track" className="hero-secondary-cta mobile-track-btn">Semak Status</Link>
           </div>
           <div className="mt-3 hidden flex-col gap-2 sm:flex-row sm:flex">
@@ -149,9 +182,9 @@ export default function HomePage() {
               WhatsApp AI
             </Link>
           </div>
-          <p className="mt-3 text-sm font-semibold text-slate-700">Cepat • Mudah • Telus</p>
-          <p className="mt-2 max-w-xl text-xs font-medium text-slate-500">
-            Platform sokongan keputusan bandar berasaskan AI pertama di Tawau.
+          <p className="mt-4 text-sm font-semibold text-blue-100">Cepat • Mudah • Telus</p>
+          <p className="mt-2 max-w-xl text-xs font-medium text-blue-200/85">
+            Platform sokongan keputusan bandar berasaskan AI untuk pelaporan awam yang lebih pantas.
           </p>
         </div>
 
@@ -169,25 +202,25 @@ export default function HomePage() {
       </section>
 
       <section className="grid gap-3 sm:hidden">
-        <article className="rounded-[28px] border border-blue-200 bg-white p-4 shadow-sm">
+        <article className="landing-card rounded-[28px] border border-blue-100 bg-white p-4 shadow-[0_12px_28px_rgba(13,31,59,0.08)]">
           <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Akses Pantas</p>
           <div className="mt-3 grid grid-cols-1 gap-3">
             <Link
               href="/submit"
-              className="rounded-[22px] bg-gradient-to-b from-blue-500 to-blue-700 px-4 py-5 text-center text-lg font-extrabold text-white shadow-lg"
+              className="rounded-[22px] bg-gradient-to-b from-blue-500 to-blue-700 px-4 py-5 text-center text-lg font-extrabold text-white shadow-lg shadow-blue-500/20"
             >
               📸 Hantar Aduan
             </Link>
             <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/track"
-                className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 text-center text-base font-bold text-slate-800"
+                className="landing-quick-card rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 text-center text-base font-bold text-slate-800 shadow-sm"
               >
                 🔍 Semak Status
               </Link>
               <Link
                 href="/assistant"
-                className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-center text-base font-bold text-emerald-800"
+                className="landing-quick-card rounded-[20px] border border-cyan-200 bg-cyan-50 px-4 py-4 text-center text-base font-bold text-cyan-800 shadow-sm"
               >
                 💬 WhatsApp AI
               </Link>
@@ -197,34 +230,81 @@ export default function HomePage() {
       </section>
 
       <section className="grid gap-3 sm:hidden">
-        <article className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-500">Cara Guna</p>
+        <article className="landing-card rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_12px_28px_rgba(13,31,59,0.08)]">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-500">Status Aduan Terkini</p>
+              <p className="mt-2 text-sm text-slate-600">Prestasi aduan semasa untuk membina keyakinan awam dan membantu pemantauan operasi.</p>
+            </div>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-extrabold text-emerald-700">
+              Live
+            </span>
+          </div>
           <div className="mt-4 grid gap-3">
+            {statusOverview.map((item) => {
+              const palette =
+                item.tone === "emerald"
+                  ? {
+                      shell: "border-emerald-100 bg-emerald-50/70",
+                      badge: "bg-emerald-100 text-emerald-800",
+                      number: "text-emerald-700",
+                      bar: "from-emerald-400 to-emerald-600",
+                    }
+                  : item.tone === "amber"
+                    ? {
+                        shell: "border-amber-100 bg-amber-50/70",
+                        badge: "bg-amber-100 text-amber-800",
+                        number: "text-amber-700",
+                        bar: "from-amber-300 to-amber-500",
+                      }
+                    : {
+                        shell: "border-red-100 bg-red-50/70",
+                        badge: "bg-red-100 text-red-800",
+                        number: "text-red-700",
+                        bar: "from-red-300 to-red-500",
+                      };
+
+              return (
+                <div key={item.key} className={`status-live-card rounded-[22px] border px-4 py-4 shadow-sm ${palette.shell}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-extrabold text-slate-900">{item.title}</p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{item.label}</p>
+                    </div>
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-extrabold ${palette.badge}`}>
+                      {item.delta > 0 ? `+${item.delta} hari ini` : item.delta < 0 ? `${item.delta} hari ini` : "Stabil"}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex items-end justify-between gap-3">
+                    <p className={`text-4xl font-black ${palette.number}`}>{item.value}</p>
+                    <p className="text-xs text-slate-500">Kemaskini terakhir: sebentar tadi</p>
+                  </div>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/80">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${palette.bar}`}
+                      style={{ width: `${Math.max(18, Math.min(100, item.value * 6))}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </article>
+      </section>
+
+      <section className="grid gap-3 sm:hidden">
+        <article className="landing-card rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_12px_28px_rgba(13,31,59,0.08)]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-500">Kelebihan Utama</p>
+          <div className="mt-4 grid grid-cols-3 gap-3">
             {[
-              {
-                step: "1",
-                title: "Ambil gambar atau terangkan masalah",
-                desc: "Masukkan aduan dengan cepat melalui borang atau WhatsApp AI.",
-              },
-              {
-                step: "2",
-                title: "AI kenal pasti isu",
-                desc: "Sistem cadangkan kategori rasmi, jabatan, dan keutamaan.",
-              },
-              {
-                step: "3",
-                title: "Pihak berkuasa bertindak",
-                desc: "Aduan terus masuk ke ruang kerja jabatan untuk tindakan lanjut.",
-              },
+              { icon: "⚡", title: "Cepat", desc: "30 saat" },
+              { icon: "🧠", title: "AI Automatik", desc: "Klasifikasi terus" },
+              { icon: "🏛", title: "Terus ke Jabatan", desc: "Hantar automatik" },
             ].map((item) => (
-              <div key={item.step} className="flex items-start gap-3 rounded-[22px] border border-slate-100 bg-slate-50 px-4 py-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">
-                  {item.step}
-                </div>
-                <div>
-                  <p className="text-sm font-extrabold text-slate-900">{item.title}</p>
-                  <p className="mt-1 text-sm text-slate-600">{item.desc}</p>
-                </div>
+              <div key={item.title} className="feature-mini-card rounded-[22px] border border-slate-100 bg-slate-50 px-3 py-4 text-center">
+                <p className="text-xl">{item.icon}</p>
+                <p className="mt-2 text-xs font-extrabold text-slate-900">{item.title}</p>
+                <p className="mt-1 text-[11px] text-slate-500">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -232,10 +312,18 @@ export default function HomePage() {
       </section>
 
       <section className="grid gap-3 sm:hidden">
-        <article className="rounded-[28px] border border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 shadow-sm">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-800">Dipercayai Untuk Demo</p>
-          <p className="mt-2 text-base font-black text-slate-900">Platform aduan pintar untuk operasi bandar Tawau.</p>
-          <p className="mt-2 text-sm text-slate-700">Demo pengalaman awam, ruang kerja jabatan, dan papan pemuka kepimpinan dalam satu sistem berasaskan AI.</p>
+        <article className="landing-card rounded-[28px] border border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 shadow-[0_12px_28px_rgba(13,31,59,0.08)]">
+          <div className="flex flex-wrap justify-center gap-2">
+            <span className="rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-blue-800 shadow-sm">
+              Platform AI Smart Governance untuk Tawau
+            </span>
+            <span className="rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-cyan-800 shadow-sm">
+              Powered by Edura Tech
+            </span>
+          </div>
+          <p className="mt-3 text-center text-sm text-slate-700">
+            Direka untuk pelaporan awam yang lebih pantas, telus, dan tersusun.
+          </p>
         </article>
       </section>
 
@@ -283,26 +371,6 @@ export default function HomePage() {
         </article>
       </section>
 
-      <section className="grid gap-3 sm:hidden">
-        <article className="rounded-2xl border border-blue-100 bg-blue-50/80 p-4 shadow-sm">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-800">Kepercayaan Awam</p>
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-xl bg-white px-2 py-3">
-              <p className="text-2xl font-black text-slate-900">{publicStats.total}</p>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Jumlah</p>
-            </div>
-            <div className="rounded-xl bg-white px-2 py-3">
-              <p className="text-2xl font-black text-blue-900">{publicStats.avgResponseHours}h</p>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Respon</p>
-            </div>
-            <div className="rounded-xl bg-white px-2 py-3">
-              <p className="text-2xl font-black text-emerald-700">{publicStats.resolvedRate}%</p>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Selesai</p>
-            </div>
-          </div>
-        </article>
-      </section>
-
       <section id="kpi-strip" className="hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
         <article className="panel panel-glass kpi-command">
           <p className="kpi-icon">📊</p>
@@ -327,23 +395,43 @@ export default function HomePage() {
       </section>
 
       <section className="hidden border-blue-200 bg-blue-50/70 sm:block panel">
-        <h2 className="text-lg font-extrabold text-slate-900">Public Transparency</h2>
+        <h2 className="text-lg font-extrabold text-slate-900">Status Aduan Terkini</h2>
+        <p className="mt-1 text-sm text-slate-600">Prestasi aduan semasa untuk membina keyakinan awam dan membantu pemantauan operasi.</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          <div className="rounded border border-slate-200 bg-white p-3">
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">This Week Completed</p>
-            <p className="text-3xl font-black text-emerald-700">{transparency.handledThisWeek}</p>
-          </div>
-          <div className="rounded border border-slate-200 bg-white p-3">
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Average First Response</p>
-            <p className="text-3xl font-black text-blue-900">{transparency.avgResponse}h</p>
-          </div>
-          <div className="rounded border border-slate-200 bg-white p-3">
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Overdue Trend vs Last Week</p>
-            <p className={`text-3xl font-black ${transparency.overdueDelta <= 0 ? "text-emerald-700" : "text-red-700"}`}>
-              {transparency.overdueDelta > 0 ? "+" : ""}
-              {transparency.overdueDelta}%
-            </p>
-          </div>
+          {statusOverview.map((item) => (
+            <div key={item.key} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{item.label}</p>
+              <p className="mt-2 text-4xl font-black text-slate-900">{item.value}</p>
+              <p
+                className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-extrabold ${
+                  item.tone === "emerald"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : item.tone === "amber"
+                      ? "bg-amber-100 text-amber-800"
+                      : "bg-red-100 text-red-800"
+                }`}
+              >
+                {item.title}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="hidden sm:grid panel">
+        <h2 className="text-lg font-extrabold text-slate-900">Kelebihan Utama</h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {[
+            { icon: "⚡", title: "Cepat", desc: "Laporan ringkas dalam 30 saat." },
+            { icon: "🧠", title: "AI Automatik", desc: "AI cadangkan kategori, jabatan, dan keutamaan." },
+            { icon: "🏛", title: "Terus ke Jabatan", desc: "Kes dihantar terus ke ruang kerja jabatan berkaitan." },
+          ].map((item) => (
+            <div key={item.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-2xl">{item.icon}</p>
+              <p className="mt-3 text-base font-extrabold text-slate-900">{item.title}</p>
+              <p className="mt-1 text-sm text-slate-600">{item.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
