@@ -78,6 +78,13 @@ export default function SubmitPage() {
 
   const [confirmTrue, setConfirmTrue] = useState(false);
   const [suggestion, setSuggestion] = useState<TriageOutput>(mockSuggestion);
+  const [aiAvailability, setAiAvailability] = useState<{
+    hasOpenAIKey: boolean;
+    model: string;
+    liveAvailable: boolean;
+  } | null>(null);
+  const [triageMode, setTriageMode] = useState<"mock" | "live">(demoMode ? "mock" : "live");
+  const [triageModel, setTriageModel] = useState("deterministic-mock");
   const [loadingAi, setLoadingAi] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -92,10 +99,41 @@ export default function SubmitPage() {
   const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
+    let active = true;
+
+    async function loadAiStatus() {
+      try {
+        const res = await fetch("/api/ai-status", { cache: "no-store" });
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          hasOpenAIKey: boolean;
+          model: string;
+          liveAvailable: boolean;
+        };
+        if (!active) return;
+        setAiAvailability(json);
+        if (!demoMode && json.liveAvailable) {
+          setTriageMode("live");
+          setTriageModel(json.model);
+        }
+      } catch {
+        // Silent fallback; UI will keep demo indicators.
+      }
+    }
+
+    loadAiStatus();
+    return () => {
+      active = false;
+    };
+  }, [demoMode]);
+
+  useEffect(() => {
     const hasText = description.trim().length >= 6;
     const hasImage = Boolean(imageDataUrl);
     if (!hasText && !hasImage) {
       setSuggestion(mockSuggestion);
+      setTriageMode(demoMode ? "mock" : aiAvailability?.liveAvailable ? "live" : "mock");
+      setTriageModel(demoMode ? "deterministic-mock" : aiAvailability?.liveAvailable ? aiAvailability.model : "deterministic-mock");
       return;
     }
 
@@ -116,6 +154,10 @@ export default function SubmitPage() {
         if (res.ok) {
           const json = (await res.json()) as TriageOutput;
           setSuggestion(json);
+          const modeHeader = res.headers.get("x-ai-mode");
+          const modelHeader = res.headers.get("x-ai-model");
+          setTriageMode(modeHeader === "live" ? "live" : "mock");
+          setTriageModel(modelHeader || (modeHeader === "live" ? aiAvailability?.model || "gpt-4.1-mini" : "deterministic-mock"));
         }
       } finally {
         setLoadingAi(false);
@@ -123,7 +165,7 @@ export default function SubmitPage() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [description, zone, demoMode, imageDataUrl]);
+  }, [description, zone, demoMode, imageDataUrl, aiAvailability]);
 
   useEffect(() => {
     const candidates = findDuplicateCandidates({ zone, text: description });
@@ -226,6 +268,8 @@ export default function SubmitPage() {
         email: email.trim() || null,
         confirmTrue,
         mergeTargetId,
+        aiMode: triageMode,
+        aiModelName: triageModel,
       });
 
       setSubmitMessage("Berjaya. Aduan anda telah direkodkan.");
@@ -258,6 +302,17 @@ export default function SubmitPage() {
   }
 
   const visionLabels = visionLabelsForSuggestion(suggestion, Boolean(imageDataUrl));
+  const showLiveAi = !demoMode && triageMode === "live";
+  const aiStatusLabel = demoMode
+    ? "Mod demo sedang digunakan"
+    : aiAvailability?.liveAvailable
+      ? "AI langsung tersedia"
+      : "Kunci API belum dikonfigurasi";
+  const aiStatusDescription = demoMode
+    ? "Tutup suis Demo Mode di atas untuk menggunakan AI sebenar."
+    : aiAvailability?.liveAvailable
+      ? `Model aktif: ${triageModel}`
+      : "Tambah OPENAI_API_KEY dalam fail .env.local untuk mengaktifkan AI sebenar.";
 
   return (
     <div className="mx-auto w-full max-w-6xl">
@@ -487,6 +542,14 @@ export default function SubmitPage() {
 
         <aside className={`panel lg:sticky lg:top-4 lg:h-fit ${currentStep === 4 ? "block" : "hidden sm:block"}`}>
           <h3 className="text-lg font-extrabold text-slate-900">Ringkasan Kes</h3>
+          <div className={`mt-3 rounded-2xl border px-3 py-3 text-sm ${
+            showLiveAi
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-amber-200 bg-amber-50 text-amber-800"
+          }`}>
+            <p className="font-extrabold">{aiStatusLabel}</p>
+            <p className="mt-1 text-xs">{aiStatusDescription}</p>
+          </div>
           <p className="mt-3 text-sm text-emerald-700">✔ Sistem telah cadangkan kategori rasmi</p>
           <div className="mt-3 grid gap-2 text-sm text-slate-700">
             <p><span className="font-semibold">Kategori Rasmi:</span> {loadingAi ? "Menganalisis..." : suggestion.rasmiJenisAduanSuggestion}</p>
@@ -494,6 +557,7 @@ export default function SubmitPage() {
             <p><span className="font-semibold">Tahap Keutamaan:</span> {urgencyLabel(suggestion.urgency)}</p>
             <p><span className="font-semibold">Anggaran Masa:</span> {suggestion.eta_hours || 48} jam</p>
             <p><span className="font-semibold">Keyakinan AI:</span> {Math.round(suggestion.confidence * 100)}%</p>
+            <p><span className="font-semibold">Sumber Analisis:</span> {showLiveAi ? "OpenAI API" : "Peraturan demo tempatan"}</p>
           </div>
 
           <details className="mt-3 rounded border border-slate-200 bg-slate-50 p-3">

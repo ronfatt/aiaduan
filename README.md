@@ -1,45 +1,83 @@
-# tawau-aduan-ai-demo
+# e-Aduan Tawau AI Demo
 
-Demo prototype for **e-Aduan Tawau AI** (municipal complaint triage).
+Prototaip demo untuk **e-Aduan Tawau AI** (sistem triage aduan perbandaran).
 
-## Install
+## Pasang
 ```bash
 npm install
 ```
 
-## Run
+## Jalan Secara Tempatan
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000)
+Buka [http://localhost:3000](http://localhost:3000)
 
-## Optional env
-Create `.env.local` if needed:
+## Sambung OpenAI API
+1. Salin fail contoh env:
 ```bash
-OPENAI_API_KEY=your_key
+cp .env.example .env.local
+```
+
+2. Isi kunci API anda dalam `.env.local`:
+```bash
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+3. Mulakan aplikasi:
+```bash
+npm run dev
+```
+
+4. Di halaman `/submit`:
+- Jika `OPENAI_API_KEY` wujud dan `Demo Mode` dimatikan, sistem akan guna **OpenAI API sebenar**
+- Jika kunci tiada, atau panggilan API gagal, sistem akan guna **triage mock deterministik**
+- Jika `Demo Mode` dihidupkan, sistem akan **paksa guna mock** walaupun kunci API wujud
+
+5. Pilihan lain:
+```bash
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
 ```
 
-Behavior:
-- If `OPENAI_API_KEY` exists, AI triage tries live model classification.
-- If key is missing (or live call fails), deterministic mock triage is used.
-- `Demo Mode` toggle in navbar forces mock triage even when key exists.
-- If `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` exists, map uses Google Maps.
-- Otherwise map falls back to Leaflet + OpenStreetMap + heat layer plugin.
-- AI triage output is structured JSON:
-  - `category`, `urgency`, `confidence`, `summary`, `department`, `eta_hours`, `reasoning`
+## Tingkah Laku AI
+- API route: `/api/triage`
+- Status AI: `/api/ai-status`
+- Model lalai: `gpt-4.1-mini`
+- Output triage menggunakan structured JSON:
+  - `category`
+  - `urgency`
+  - `confidence`
+  - `summary`
+  - `department`
+  - `eta_hours`
+  - `reasoning`
+  - `topCategoryTileSuggestion`
+  - `rasmiJenisAduanSuggestion`
+  - `officialMappingConfidence`
 
-## Routes
-- `/` landing page with CTA buttons
-- `/submit` citizen complaint form + real-time AI suggestions
-- `/track/[id]` success page + tracking timeline
-- `/admin` complaint table, filters, SLA countdown, right-side detail drawer
-- `/insights` mayor KPI cards, 14-day trend chart (Recharts), map heat layer
+## Demo Mode vs AI Langsung
+- `Demo Mode` sesuai untuk pitch tanpa internet / tanpa API key
+- `AI Langsung` sesuai untuk tunjuk klasifikasi sebenar melalui OpenAI API
+- Pada halaman `/submit`, panel `Ringkasan Kes` akan tunjuk sama ada sistem sedang menggunakan:
+  - `OpenAI API`
+  - atau `Peraturan demo tempatan`
 
-## Demo walkthrough
-1. Go to `/submit`, type pothole complaint text.
-2. Watch AI suggestions update in real-time (category, urgency, department, ETA, confidence, reasoning).
-3. Submit and copy tracking ID from `/track/[id]`.
-4. Open `/admin`, locate complaint, open detail drawer, change status.
-5. Return to `/track/[id]` and confirm timeline reflects status changes.
-6. Open `/insights` for KPI cards, trend chart, and Tawau map heat visualization.
+## Laluan Utama
+- `/` halaman utama
+- `/submit` borang aduan rakyat + cadangan AI masa nyata
+- `/track` semakan kod jejak
+- `/track/[id]` status aduan + timeline
+- `/assistant` demo WhatsApp / voice bot
+- `/admin` ruang kerja jabatan
+- `/insights` analitik bandar
+- `/president` papan pemuka presiden
+
+## Aliran Demo
+1. Buka `/submit`
+2. Taip aduan seperti `Lampu jalan di Jalan Apas tidak menyala sejak 3 hari`
+3. Lihat cadangan AI dikemas kini secara masa nyata
+4. Hantar aduan dan simpan kod jejak
+5. Buka `/admin`, cari kes dan ubah status
+6. Kembali ke `/track/[id]` untuk lihat perubahan status
+7. Buka `/insights` dan `/president` untuk tunjuk peta risiko, KPI, dan ringkasan AI

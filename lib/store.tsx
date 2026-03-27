@@ -48,6 +48,8 @@ type StoreState = {
     email: string | null;
     confirmTrue: boolean;
     mergeTargetId?: string | null;
+    aiMode?: "mock" | "live";
+    aiModelName?: string | null;
   }) => Complaint;
   updateStatus: (id: string, status: ComplaintStatus) => void;
   updatePegawai: (id: string, pegawai: PegawaiBertanggungjawab | null) => void;
@@ -336,6 +338,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         email,
         confirmTrue,
         mergeTargetId,
+        aiMode,
+        aiModelName,
       }) => {
         const now = new Date().toISOString();
         if (mergeTargetId) {
@@ -464,8 +468,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             ownerAgency,
           },
           aiModelMeta: {
-            model: demoMode ? "deterministic-mock" : "gpt-4.1-mini",
-            version: "2026.02-demo",
+            model: aiMode === "live" ? aiModelName || "gpt-4.1-mini" : "deterministic-mock",
+            version: aiMode === "live" ? "2026.03-live" : "2026.03-demo",
             timestamp: now,
           },
           aiVisionSummary: imageAttached ? "Visual signal suggests infrastructure defect in public area." : null,

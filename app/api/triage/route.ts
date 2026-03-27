@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { triageComplaint, triageMock } from "@/lib/triage";
+import { DEFAULT_OPENAI_TRIAGE_MODEL, getOpenAiTriageConfig, triageComplaint, triageMock } from "@/lib/triage";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as {
@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
   };
   const text = body.text?.trim() ?? "";
   const hasImage = Boolean(body.imageDataUrl);
+  const config = getOpenAiTriageConfig();
 
   if (!text && !hasImage) {
     return NextResponse.json({ error: "text or image is required" }, { status: 400 });
@@ -24,6 +25,12 @@ export async function POST(req: NextRequest) {
         imageDataUrl: body.imageDataUrl,
         categoryHint: body.categoryHint as never,
       }),
+      {
+        headers: {
+          "x-ai-mode": "mock",
+          "x-ai-model": "deterministic-mock",
+        },
+      },
     );
   }
 
@@ -33,5 +40,11 @@ export async function POST(req: NextRequest) {
     imageDataUrl: body.imageDataUrl,
     categoryHint: body.categoryHint as never,
   });
-  return NextResponse.json(result);
+  const liveMode = config.hasOpenAIKey ? "live" : "mock";
+  return NextResponse.json(result, {
+    headers: {
+      "x-ai-mode": liveMode,
+      "x-ai-model": liveMode === "live" ? config.model : DEFAULT_OPENAI_TRIAGE_MODEL,
+    },
+  });
 }

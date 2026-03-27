@@ -9,6 +9,7 @@ import {
 import { mapOfficialJenisToDepartment, mapTriageToOfficial } from "@/lib/mapping";
 
 type TriageInput = { text: string; zone?: string; imageDataUrl?: string; categoryHint?: CitizenCategoryTop | null };
+export const DEFAULT_OPENAI_TRIAGE_MODEL = "gpt-4.1-mini";
 
 const categories: Category[] = ["ROAD", "WASTE", "DRAINAGE", "STREETLIGHT", "ANIMALS", "ILLEGAL_STALL"];
 const urgencies: Urgency[] = ["LOW", "MEDIUM", "HIGH"];
@@ -59,6 +60,13 @@ const urgencyEta: Record<Urgency, number> = {
   MEDIUM: 72,
   LOW: 168,
 };
+
+export function getOpenAiTriageConfig() {
+  return {
+    hasOpenAIKey: Boolean(process.env.OPENAI_API_KEY),
+    model: process.env.OPENAI_MODEL?.trim() || DEFAULT_OPENAI_TRIAGE_MODEL,
+  };
+}
 
 function inferUrgency(text: string): Urgency {
   const t = text.toLowerCase();
@@ -190,6 +198,7 @@ export async function triageComplaint(input: {
 }): Promise<TriageOutput> {
   const key = process.env.OPENAI_API_KEY;
   const fallback = triageMock(input);
+  const config = getOpenAiTriageConfig();
 
   if (!key) {
     console.log("[triage] OPENAI_API_KEY missing, fallback mock used", fallback);
@@ -226,7 +235,7 @@ export async function triageComplaint(input: {
         Authorization: `Bearer ${key}`,
       },
       body: JSON.stringify({
-        model: "gpt-4.1-mini",
+        model: config.model,
         input: [
           { role: "system", content: [{ type: "input_text", text: systemPrompt }] },
           { role: "user", content: userParts },
@@ -270,16 +279,31 @@ export async function triageComplaint(input: {
     });
 
     if (!response.ok) {
-      console.log("[triage] API response not ok, fallback mock used");
+      console.log("[triage] API response not ok, fallback mock used", response.status, response.statusText);
       return fallback;
     }
 
-    const data = (await response.json()) as { output_text?: string };
-    const parsed = JSON.parse(data.output_text ?? "{}");
+    const data = (await response.json()) as {
+      output_text?: string;
+      output?: Array<{
+        content?: Array<{
+          type?: string;
+          text?: string;
+        }>;
+      }>;
+    };
+    const rawText =
+      data.output_text ??
+      data.output
+        ?.flatMap((item) => item.content ?? [])
+        .find((item) => item.type === "output_text" && typeof item.text === "string")
+        ?.text ??
+      "{}";
+    const parsed = JSON.parse(rawText);
     const validated = validateTriageObject(parsed, fallback);
     validated.rasmiJenisAduanSuggestion = mapTriageToOfficial(validated, input.text);
     validated.department = mapOfficialJenisToDepartment(validated.rasmiJenisAduanSuggestion);
-    console.log("[triage] AI output", validated);
+    console.log("[triage] AI output", { model: config.model, result: validated });
     return validated;
   } catch (error) {
     console.log("[triage] API error, fallback mock used", error);
