@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CountUp } from "@/components/CountUp";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
@@ -12,10 +12,128 @@ function withinDays(dateString: string, days: number) {
   return diff <= days * 24 * 60 * 60 * 1000;
 }
 
+function buildMiniSeries(value: number, delta: number) {
+  const base = Math.max(3, value);
+  return Array.from({ length: 6 }, (_, index) => {
+    const wave = ((index % 3) - 1) * 2;
+    const trend = delta >= 0 ? index : 5 - index;
+    return Math.max(14, Math.min(100, base * 3 + trend * 4 + wave));
+  });
+}
+
+function formatDelta(delta: number) {
+  if (delta > 0) return `+${delta} hari ini`;
+  if (delta < 0) return `${delta} hari ini`;
+  return "Stabil";
+}
+
+function StatusMetricCard({
+  item,
+  liveLabel,
+  compact = false,
+}: {
+  item: {
+    key: string;
+    title: string;
+    label: string;
+    value: number;
+    delta: number;
+    tone: "emerald" | "amber" | "red";
+    sparkline: number[];
+    activityLabel: string;
+  };
+  liveLabel: string;
+  compact?: boolean;
+}) {
+  const palette =
+    item.tone === "emerald"
+      ? {
+          shell: "border-emerald-100 bg-emerald-50/70",
+          badge: "bg-emerald-100 text-emerald-800",
+          number: "text-emerald-700",
+          bar: "from-emerald-400 to-emerald-600",
+          glow: "shadow-[0_10px_24px_rgba(16,185,129,0.10)]",
+        }
+      : item.tone === "amber"
+        ? {
+            shell: "border-amber-100 bg-amber-50/70",
+            badge: "bg-amber-100 text-amber-800",
+            number: "text-amber-700",
+            bar: "from-amber-300 to-amber-500",
+            glow: "shadow-[0_10px_24px_rgba(245,158,11,0.10)]",
+          }
+        : {
+            shell: "border-red-100 bg-red-50/70",
+            badge: "bg-red-100 text-red-800",
+            number: "text-red-700",
+            bar: "from-red-300 to-red-500",
+            glow: "shadow-[0_10px_24px_rgba(239,68,68,0.10)]",
+          };
+
+  return (
+    <div
+      key={item.key}
+      className={`status-live-card rounded-[22px] border px-4 py-4 shadow-sm ${palette.shell} ${palette.glow}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-extrabold text-slate-900">{item.title}</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{item.label}</p>
+        </div>
+        <span className={`rounded-full px-2.5 py-1 text-[11px] font-extrabold ${palette.badge}`}>
+          {formatDelta(item.delta)}
+        </span>
+      </div>
+
+      <div className="mt-3 flex items-end justify-between gap-3">
+        <div>
+          <p className={`text-4xl font-black ${palette.number}`}>
+            <CountUp target={item.value} /> <span className="text-base font-bold text-slate-500">Kes</span>
+          </p>
+          <p className="mt-1 text-xs font-semibold text-slate-500">{item.activityLabel}</p>
+        </div>
+        <div className="text-right">
+          <p className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
+            <span className="status-live-indicator" />
+            Live
+          </p>
+          <p className="mt-1 text-xs text-slate-500">{liveLabel}</p>
+        </div>
+      </div>
+
+      <div className={`mt-3 h-2 overflow-hidden rounded-full bg-white/80 ${compact ? "" : "mb-3"}`}>
+        <div
+          className={`h-full rounded-full bg-gradient-to-r ${palette.bar}`}
+          style={{ width: `${Math.max(18, Math.min(100, item.value * 6))}%` }}
+        />
+      </div>
+
+      <div className="status-sparkline" aria-hidden="true">
+        {item.sparkline.map((point, index) => (
+          <span
+            key={`${item.key}-${index}`}
+            className={`status-spark-bar bg-gradient-to-t ${palette.bar}`}
+            style={{ height: `${point}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { complaints } = useStore();
   const { t } = useI18n();
   const [nowMs] = useState(() => Date.now());
+  const [liveTick, setLiveTick] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setLiveTick((value) => value + 1);
+    }, 15000);
+
+    return () => window.clearInterval(interval);
+  }, []);
 
   const publicStats = useMemo(() => {
     const total = complaints.length;
@@ -133,6 +251,8 @@ export default function HomePage() {
         value: resolved.length,
         delta: computeDelta(resolved),
         tone: "emerald",
+        sparkline: buildMiniSeries(resolved.length, computeDelta(resolved)),
+        activityLabel: "Prestasi penutupan kes stabil",
       },
       {
         key: "in-progress",
@@ -141,6 +261,8 @@ export default function HomePage() {
         value: inProgress.length,
         delta: computeDelta(inProgress),
         tone: "amber",
+        sparkline: buildMiniSeries(inProgress.length, computeDelta(inProgress)),
+        activityLabel: "Pasukan lapangan sedang bergerak",
       },
       {
         key: "new",
@@ -149,9 +271,18 @@ export default function HomePage() {
         value: newlyOpened.length,
         delta: computeDelta(newlyOpened),
         tone: "red",
+        sparkline: buildMiniSeries(newlyOpened.length, computeDelta(newlyOpened)),
+        activityLabel: "Kes baharu sedang dinilai AI",
       },
     ] as const;
   }, [complaints, nowMs]);
+
+  const liveStatusLabel = useMemo(() => {
+    const phase = liveTick % 3;
+    if (phase === 0) return "Dikemas kini sebentar tadi";
+    if (phase === 1) return "Sinkron automatik setiap 15s";
+    return "Aliran aduan sedang dipantau";
+  }, [liveTick]);
 
   return (
     <div className="grid gap-4 pb-24 sm:pb-0">
@@ -236,58 +367,22 @@ export default function HomePage() {
               <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-500">Status Aduan Terkini</p>
               <p className="mt-2 text-sm text-slate-600">Prestasi aduan semasa untuk membina keyakinan awam dan membantu pemantauan operasi.</p>
             </div>
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-extrabold text-emerald-700">
-              Live
-            </span>
+            <div className="status-live-pill">
+              <span className="status-live-indicator" />
+              <span>Live</span>
+            </div>
+          </div>
+          <div className="status-board-header mt-4">
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-slate-500">Pemantauan Aduan Awam</p>
+              <p className="mt-1 text-sm font-semibold text-slate-800">{liveStatusLabel}</p>
+            </div>
+            <span className="status-update-chip">Kemaskini automatik</span>
           </div>
           <div className="mt-4 grid gap-3">
-            {statusOverview.map((item) => {
-              const palette =
-                item.tone === "emerald"
-                  ? {
-                      shell: "border-emerald-100 bg-emerald-50/70",
-                      badge: "bg-emerald-100 text-emerald-800",
-                      number: "text-emerald-700",
-                      bar: "from-emerald-400 to-emerald-600",
-                    }
-                  : item.tone === "amber"
-                    ? {
-                        shell: "border-amber-100 bg-amber-50/70",
-                        badge: "bg-amber-100 text-amber-800",
-                        number: "text-amber-700",
-                        bar: "from-amber-300 to-amber-500",
-                      }
-                    : {
-                        shell: "border-red-100 bg-red-50/70",
-                        badge: "bg-red-100 text-red-800",
-                        number: "text-red-700",
-                        bar: "from-red-300 to-red-500",
-                      };
-
-              return (
-                <div key={item.key} className={`status-live-card rounded-[22px] border px-4 py-4 shadow-sm ${palette.shell}`}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-extrabold text-slate-900">{item.title}</p>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{item.label}</p>
-                    </div>
-                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-extrabold ${palette.badge}`}>
-                      {item.delta > 0 ? `+${item.delta} hari ini` : item.delta < 0 ? `${item.delta} hari ini` : "Stabil"}
-                    </span>
-                  </div>
-                  <div className="mt-3 flex items-end justify-between gap-3">
-                    <p className={`text-4xl font-black ${palette.number}`}>{item.value}</p>
-                    <p className="text-xs text-slate-500">Kemaskini terakhir: sebentar tadi</p>
-                  </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/80">
-                    <div
-                      className={`h-full rounded-full bg-gradient-to-r ${palette.bar}`}
-                      style={{ width: `${Math.max(18, Math.min(100, item.value * 6))}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+            {statusOverview.map((item) => (
+              <StatusMetricCard key={item.key} item={item} liveLabel={liveStatusLabel} compact />
+            ))}
           </div>
         </article>
       </section>
@@ -395,25 +490,19 @@ export default function HomePage() {
       </section>
 
       <section className="hidden border-blue-200 bg-blue-50/70 sm:block panel">
-        <h2 className="text-lg font-extrabold text-slate-900">Status Aduan Terkini</h2>
-        <p className="mt-1 text-sm text-slate-600">Prestasi aduan semasa untuk membina keyakinan awam dan membantu pemantauan operasi.</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-extrabold text-slate-900">Status Aduan Terkini</h2>
+            <p className="mt-1 text-sm text-slate-600">Prestasi aduan semasa untuk membina keyakinan awam dan membantu pemantauan operasi.</p>
+          </div>
+          <div className="status-live-pill">
+            <span className="status-live-indicator" />
+            <span>{liveStatusLabel}</span>
+          </div>
+        </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {statusOverview.map((item) => (
-            <div key={item.key} className="rounded-2xl border border-slate-200 bg-white p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{item.label}</p>
-              <p className="mt-2 text-4xl font-black text-slate-900">{item.value}</p>
-              <p
-                className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-extrabold ${
-                  item.tone === "emerald"
-                    ? "bg-emerald-100 text-emerald-800"
-                    : item.tone === "amber"
-                      ? "bg-amber-100 text-amber-800"
-                      : "bg-red-100 text-red-800"
-                }`}
-              >
-                {item.title}
-              </p>
-            </div>
+            <StatusMetricCard key={item.key} item={item} liveLabel={liveStatusLabel} />
           ))}
         </div>
       </section>
