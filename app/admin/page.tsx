@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
 import { AdminSideNav } from "@/components/AdminSideNav";
 import { CategoryBadge, StatusBadge, UrgencyBadge } from "@/components/Badges";
+import { CountUp } from "@/components/CountUp";
 import { getAdminAiAction, getSimilarCaseStats } from "@/lib/aiIntel";
 import { useStore } from "@/lib/store";
 import {
@@ -37,6 +38,28 @@ const pegawaiList: PegawaiBertanggungjawab[] = [
 
 function countdown(item: Complaint, nowMs: number) {
   return datelineCountdown(item, nowMs);
+}
+
+function riskTone(score: number) {
+  if (score >= 85) {
+    return {
+      ring: "rgba(255,77,79,0.28)",
+      fill: "linear-gradient(90deg, #ff7a7c, #ff4d4f)",
+      glow: "rgba(255,77,79,0.25)",
+    };
+  }
+  if (score >= 70) {
+    return {
+      ring: "rgba(245,158,11,0.24)",
+      fill: "linear-gradient(90deg, #ffd86b, #f59e0b)",
+      glow: "rgba(245,158,11,0.22)",
+    };
+  }
+  return {
+    ring: "rgba(45,107,255,0.22)",
+    fill: "linear-gradient(90deg, #74a2ff, #2d6bff)",
+    glow: "rgba(45,107,255,0.22)",
+  };
 }
 
 export default function AdminPage() {
@@ -111,6 +134,22 @@ export default function AdminPage() {
     return base;
   }, [filtered, complaints, mode]);
 
+  const queueStats = useMemo(() => {
+    const escalated = displayItems.filter((row) => row.ai.escalation).length;
+    const presidentLevel = displayItems.filter((row) => row.item.slaEscalationLevel === "PRESIDENT").length;
+    const avgRisk = displayItems.length
+      ? Math.round(displayItems.reduce((sum, row) => sum + row.ai.riskScore, 0) / displayItems.length)
+      : 0;
+    return { escalated, presidentLevel, avgRisk };
+  }, [displayItems]);
+
+  const liveTargetId = useMemo(() => {
+    const priorityRows = displayItems.filter((row) => row.ai.escalation || row.highRisk);
+    if (!priorityRows.length) return null;
+    const idx = Math.floor(nowMs / 2400) % priorityRows.length;
+    return priorityRows[idx]?.item.id ?? null;
+  }, [displayItems, nowMs]);
+
   return (
     <div className="grid gap-4 lg:grid-cols-[240px_1fr]">
       <AdminSideNav />
@@ -138,20 +177,35 @@ export default function AdminPage() {
           </div>
         </div>
         <div className="summary-strip mt-4 grid gap-2 md:grid-cols-3">
-          <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+          <div className="summary-tile rounded-xl border border-slate-200 bg-white px-3 py-3">
             <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Hari Ini</p>
-            <p className="text-sm text-slate-700">Aduan Baru</p>
-            <p className="text-2xl font-extrabold text-blue-900">{dailySummary.aduanBaru}</p>
+            <p className="mt-1 text-sm text-slate-700">Aduan Baru</p>
+            <p className="mt-1 text-3xl font-extrabold text-blue-900"><CountUp target={dailySummary.aduanBaru} /></p>
           </div>
-          <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2">
+          <div className="summary-tile rounded-xl border border-red-200 bg-red-50 px-3 py-3">
             <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Hari Ini</p>
-            <p className="text-sm text-slate-700">Kes Lewat</p>
-            <p className="text-2xl font-extrabold text-red-700">{dailySummary.kesLewat}</p>
+            <p className="mt-1 text-sm text-slate-700">Kes Lewat</p>
+            <p className="mt-1 text-3xl font-extrabold text-red-700"><CountUp target={dailySummary.kesLewat} /></p>
           </div>
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
+          <div className="summary-tile rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
             <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Hari Ini</p>
-            <p className="text-sm text-slate-700">Risiko Tinggi</p>
-            <p className="text-2xl font-extrabold text-amber-700">{dailySummary.risikoTinggi}</p>
+            <p className="mt-1 text-sm text-slate-700">Risiko Tinggi</p>
+            <p className="mt-1 text-3xl font-extrabold text-amber-700"><CountUp target={dailySummary.risikoTinggi} /></p>
+          </div>
+        </div>
+
+        <div className="admin-queue-live mt-4 rounded-2xl border border-slate-200 bg-slate-950 px-4 py-3 text-white">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-200">AI Queue Monitor</p>
+              <p className="mt-1 text-sm text-slate-200">Sistem sedang menyusun kes, mengesan eskalasi, dan memantau tekanan operasi jabatan.</p>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs font-semibold">
+              <span className="admin-live-pill"><span className="status-dot" />Segerak</span>
+              <span className="admin-live-pill">AI Eskalasi: {queueStats.escalated}</span>
+              <span className="admin-live-pill">Tahap Presiden: {queueStats.presidentLevel}</span>
+              <span className="admin-live-pill">Purata Risiko: {queueStats.avgRisk}</span>
+            </div>
           </div>
         </div>
 
@@ -164,7 +218,7 @@ export default function AdminPage() {
 
         {mode === "LEADERSHIP" ? <p className="mt-2 text-sm font-semibold text-red-700">5 kes utama (risiko tinggi / dieskalasi)</p> : null}
 
-        <div className="mt-4 overflow-x-auto">
+        <div className="admin-table-wrap mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
           <table className="min-w-full text-left text-sm">
             <thead>
               <tr className="admin-head border-b border-slate-300">
@@ -192,15 +246,33 @@ export default function AdminPage() {
                 <tr
                   key={item.id}
                   onClick={() => setSelectedId(item.id)}
-                  className={`admin-row cursor-pointer border-b border-slate-200 hover:shadow-[0_0_0_1px_rgba(45,107,255,0.25)] ${highRisk ? "high-risk-row" : "hover:bg-slate-50"}`}
+                  className={`admin-row cursor-pointer border-b border-slate-200 hover:shadow-[0_0_0_1px_rgba(45,107,255,0.25)] ${highRisk ? "high-risk-row" : "hover:bg-slate-50"} ${liveTargetId === item.id ? "live-monitor-row" : ""}`}
                 >
                   <td className="py-2 pr-3 font-bold text-blue-900">{item.id}</td>
                   <td className="py-2 pr-3">{item.zone}</td>
                   <td className="py-2 pr-3 font-semibold">{item.rasmiJenisAduan}</td>
                   <td className="py-2 pr-3"><CategoryBadge category={item.aiCategory} /></td>
                   <td className="py-2 pr-3"><span className="badge border border-slate-200 bg-slate-100 text-slate-700">{item.ownerAgency}</span></td>
-                  <td className="py-2 pr-3 font-extrabold text-slate-900"><span className="risk-score-chip">{ai.riskScore}</span></td>
-                  <td className="py-2 pr-3">{ai.escalation ? <span className="badge border border-red-200 bg-red-100 text-red-800">AI Eskalasi</span> : <span className="text-xs text-slate-500">Tidak</span>}</td>
+                  <td className="py-2 pr-3 font-extrabold text-slate-900">
+                    <div className="risk-score-wrap">
+                      <span
+                        className="risk-score-chip"
+                        style={
+                          {
+                            ["--risk-ring" as string]: riskTone(ai.riskScore).ring,
+                            ["--risk-fill" as string]: riskTone(ai.riskScore).fill,
+                            ["--risk-glow" as string]: riskTone(ai.riskScore).glow,
+                          } as CSSProperties
+                        }
+                      >
+                        {ai.riskScore}
+                      </span>
+                      <span className="risk-mini-track">
+                        <span className="risk-mini-fill" style={{ width: `${ai.riskScore}%`, background: riskTone(ai.riskScore).fill }} />
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-2 pr-3">{ai.escalation ? <span className="badge ai-escalation-badge">AI Eskalasi</span> : <span className="text-xs text-slate-500">Tidak</span>}</td>
                   <td className="py-2 pr-3"><span className="badge border border-slate-200 bg-slate-100 text-slate-700">{item.slaEscalationLevel}</span></td>
                   <td className="py-2 pr-3"><StatusBadge status={item.status} /></td>
                   {mode === "OPERATIONAL" ? (
