@@ -779,9 +779,9 @@ function template(text: string, vars?: Record<string, string | number>) {
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === "undefined") return "en";
+    if (typeof window === "undefined") return "ms";
     const saved = window.localStorage.getItem(STORAGE_KEY) as Locale | null;
-    return saved && (saved === "en" || saved === "ms" || saved === "zh") ? saved : "en";
+    return saved && (saved === "en" || saved === "ms" || saved === "zh") ? saved : "ms";
   });
 
   useEffect(() => {

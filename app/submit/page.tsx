@@ -284,7 +284,7 @@ export default function SubmitPage() {
               className={`rounded-xl px-2 py-2 text-xs font-extrabold ${currentStep === step ? "bg-blue-600 text-white" : currentStep > step ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}
               onClick={() => setCurrentStep(step)}
             >
-              Step {step}
+              Langkah {step}
             </button>
           ))}
         </div>
@@ -418,11 +418,11 @@ export default function SubmitPage() {
                   </div>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     <div className="rounded-xl border border-white bg-white px-3 py-2">
-                      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Suggested Zone</p>
+                      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Zon Dicadangkan</p>
                       <p className="text-sm font-semibold text-slate-900">{zone}</p>
                     </div>
                     <div className="rounded-xl border border-white bg-white px-3 py-2">
-                      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Suggested Department</p>
+                      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Jabatan Dicadangkan</p>
                       <p className="text-sm font-semibold text-slate-900">{mapOfficialJenisToDepartment(suggestion.rasmiJenisAduanSuggestion)}</p>
                     </div>
                   </div>
@@ -436,7 +436,7 @@ export default function SubmitPage() {
                       setCurrentStep(4);
                     }}
                   >
-                    Use AI Auto-Fill
+                    Guna Isian Automatik AI
                   </button>
                 </div>
               ) : null}
@@ -499,9 +499,9 @@ export default function SubmitPage() {
           <details className="mt-3 rounded border border-slate-200 bg-slate-50 p-3">
             <summary className="cursor-pointer text-sm font-semibold text-slate-700">Lihat Butiran AI</summary>
             <div className="mt-2 grid gap-1 text-sm text-slate-700">
-              <p><span className="font-semibold">AI Summary:</span> {suggestion.summary}</p>
-              <p><span className="font-semibold">Reasoning:</span> {suggestion.reasoning}</p>
-              <p><span className="font-semibold">Mapping Confidence:</span> {Math.round(suggestion.officialMappingConfidence)}%</p>
+              <p><span className="font-semibold">Ringkasan AI:</span> {suggestion.summary}</p>
+              <p><span className="font-semibold">Sebab:</span> {suggestion.reasoning}</p>
+              <p><span className="font-semibold">Keyakinan Pemetaan:</span> {Math.round(suggestion.officialMappingConfidence)}%</p>
               <p className="mt-2 font-semibold">Cadangan Tindakan:</p>
               <ul className="list-disc pl-5">
                 {playbookByCategory(suggestion.category).map((step) => (
@@ -541,7 +541,7 @@ export default function SubmitPage() {
             <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-emerald-700">Aduan Berjaya</p>
             <h3 className="mt-2 text-2xl font-black text-slate-900">Aduan berjaya dihantar</h3>
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Tracking Code</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Kod Jejak</p>
               <p className="mt-1 text-3xl font-black text-blue-900">{receipt.id}</p>
               <p className="mt-3 text-sm text-slate-700"><span className="font-semibold">Jabatan:</span> {receipt.department}</p>
               <p className="text-sm text-slate-700"><span className="font-semibold">Agensi:</span> {receipt.ownerAgency}</p>

@@ -59,26 +59,26 @@ export default function ReportsPage() {
           <article className="panel panel-glass"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{t("reports_resolved")}</p><p className="text-3xl font-black text-emerald-700">{report.done}</p></article>
           <article className="panel panel-glass"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{t("reports_overdue")}</p><p className="text-3xl font-black text-red-700">{report.overdue}</p></article>
           <article className="panel panel-glass"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{t("reports_president_reminders")}</p><p className="text-3xl font-black text-blue-900">{report.reminderSent}</p></article>
-          <article className="panel panel-glass"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Cross-Agency</p><p className="text-3xl font-black text-indigo-700">{report.crossAgency}</p></article>
-          <article className="panel panel-glass"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Avg Feedback</p><p className="text-3xl font-black text-amber-700">{report.avgRating || "-"}</p></article>
+          <article className="panel panel-glass"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Antara Agensi</p><p className="text-3xl font-black text-indigo-700">{report.crossAgency}</p></article>
+          <article className="panel panel-glass"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Purata Maklum Balas</p><p className="text-3xl font-black text-amber-700">{report.avgRating || "-"}</p></article>
         </div>
 
         <section className="mt-4 rounded-[28px] border border-blue-900/10 bg-[radial-gradient(circle_at_top_left,_rgba(37,99,235,0.18),_rgba(15,23,42,0.96)_58%)] p-5 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-blue-100">AI Weekly Mayor Brief</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-blue-100">Ringkasan Mingguan AI</p>
               <h3 className="mt-2 text-2xl font-black leading-tight">{weeklyBrief.headline}</h3>
               <div className="mt-4 grid gap-3 md:grid-cols-3">
                 <article className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Operations</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Operasi</p>
                   <p className="mt-2 text-sm text-slate-100">{weeklyBrief.operationalNote}</p>
                 </article>
                 <article className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Public View</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Pandangan Awam</p>
                   <p className="mt-2 text-sm text-slate-100">{weeklyBrief.publicNote}</p>
                 </article>
                 <article className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Recommendation</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Cadangan</p>
                   <p className="mt-2 text-sm text-slate-100">{weeklyBrief.recommendation}</p>
                 </article>
               </div>
@@ -97,7 +97,7 @@ export default function ReportsPage() {
                 ])
               }
             >
-              Export Weekly Brief
+              Eksport Ringkasan Mingguan
             </button>
           </div>
         </section>
@@ -169,7 +169,7 @@ export default function ReportsPage() {
               ])
             }
           >
-            Export Action Log CSV
+            Eksport CSV Log Tindakan
           </button>
           <button
             type="button"
@@ -188,7 +188,7 @@ export default function ReportsPage() {
               ])
             }
           >
-            Export Feedback CSV
+            Eksport CSV Maklum Balas
           </button>
 
           <button type="button" className="btn-secondary" onClick={() => window.print()}>

@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n";
 
 const groups = [
   {
-    title: "Department Workspace",
+    title: "Ruang Kerja Jabatan",
     items: [
       { href: "/admin", key: "admin_nav_queue" },
       { href: "/field", key: "admin_nav_field" },
@@ -15,7 +15,7 @@ const groups = [
     ],
   },
   {
-    title: "Leadership Tools",
+    title: "Alat Kepimpinan",
     items: [
       { href: "/insights", key: "admin_nav_mayor" },
       { href: "/president", key: "admin_nav_president" },

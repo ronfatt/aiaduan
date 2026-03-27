@@ -58,22 +58,22 @@ export default function PresidentQueuePage() {
       <AdminSideNav />
       <section className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
         <div className="panel border-amber-200 bg-amber-50/80 lg:col-span-2">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-800">President Dashboard</p>
-          <h1 className="mt-1 text-2xl font-black text-slate-900">主席决策台</h1>
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-800">Papan Pemuka Presiden</p>
+          <h1 className="mt-1 text-2xl font-black text-slate-900">Meja Keputusan Presiden</h1>
           <p className="mt-2 text-sm text-slate-700">
-            这里不是看单个工单，而是看整座城市的风险、部门压力和 AI 给出的决策建议。重点是快速判断哪里需要介入。
+            Di sini fokusnya bukan satu kes semata-mata, tetapi risiko bandar, tekanan jabatan dan cadangan keputusan daripada AI.
           </p>
           <div className="mt-3 grid gap-2 md:grid-cols-4">
-            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">AI City Risk Index</div>
-            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">AI Resource Allocation</div>
-            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">AI Weekly Brief</div>
-            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">AI Broadcast Recommendation</div>
+            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">Indeks Risiko Bandar AI</div>
+            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">Cadangan Agihan Sumber AI</div>
+            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">Ringkasan Mingguan AI</div>
+            <div className="rounded-xl border border-white bg-white px-3 py-2 text-sm text-slate-700">Cadangan Siaran AI</div>
           </div>
         </div>
 
         <div className="panel panel-ai">
           <p className="text-xs font-bold uppercase tracking-wide text-cyan-200">Presiden View</p>
-          <h2 className="mt-1 text-2xl font-extrabold text-white">City Intelligence Index</h2>
+          <h2 className="mt-1 text-2xl font-extrabold text-white">Indeks Kecerdasan Bandar</h2>
 
           <div className="mt-4 flex justify-center">
             <div
@@ -82,7 +82,7 @@ export default function PresidentQueuePage() {
             >
               <div className="city-index-core">
                 <p className="text-4xl font-black text-white">{intelligenceIndex}</p>
-                <p className="text-sm font-semibold uppercase tracking-wide text-cyan-200">Index / 100</p>
+                <p className="text-sm font-semibold uppercase tracking-wide text-cyan-200">Indeks / 100</p>
               </div>
             </div>
           </div>
@@ -107,27 +107,27 @@ export default function PresidentQueuePage() {
           <div className="panel border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-amber-700">AI Resource Allocation</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-amber-700">Cadangan Agihan Sumber AI</p>
                 <h3 className="mt-1 text-xl font-extrabold text-slate-900">{allocationPlan.primaryDepartment}</h3>
               </div>
               <div className="rounded-2xl border border-amber-200 bg-white px-4 py-3 text-center">
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Overload Score</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Skor Beban</p>
                 <p className="text-3xl font-black text-amber-700">{allocationPlan.overloadScore}</p>
               </div>
             </div>
             <p className="mt-3 text-sm font-semibold text-slate-700">{allocationPlan.recommendation}</p>
             <div className="mt-3 grid gap-3 md:grid-cols-3">
               <article className="rounded-xl border border-slate-200 bg-white p-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Priority Cases</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Kes Keutamaan</p>
                 <p className="mt-1 text-3xl font-black text-red-700">{allocationPlan.priorityCases}</p>
               </article>
               <article className="rounded-xl border border-slate-200 bg-white p-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Delay Routine Tasks</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Tangguh Tugas Rutin</p>
                 <p className="mt-1 text-3xl font-black text-slate-900">{allocationPlan.deferredTasks}</p>
               </article>
               <article className="rounded-xl border border-slate-200 bg-white p-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Suggested Action</p>
-                <p className="mt-1 text-sm font-semibold text-slate-700">Supervisor intervention</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Tindakan Disyorkan</p>
+                <p className="mt-1 text-sm font-semibold text-slate-700">Intervensi penyelia</p>
               </article>
             </div>
             <div className="mt-3 grid gap-2 text-sm">
@@ -138,14 +138,14 @@ export default function PresidentQueuePage() {
           </div>
 
           <div className="panel overflow-x-auto">
-            <h3 className="text-xl font-extrabold text-slate-900">Top 5 Risiko Tinggi</h3>
+            <h3 className="text-xl font-extrabold text-slate-900">5 Kes Risiko Tertinggi</h3>
             <table className="mt-3 min-w-full text-left text-sm">
               <thead>
                 <tr className="admin-head border-b border-slate-300">
                   <th className="py-2 pr-3">ID</th>
                   <th className="py-2 pr-3">Zon</th>
                   <th className="py-2 pr-3">Risiko</th>
-                  <th className="py-2 pr-3">Urgency</th>
+                  <th className="py-2 pr-3">Keutamaan</th>
                   <th className="py-2 pr-3">Status</th>
                   <th className="py-2 pr-3">SLA</th>
                 </tr>

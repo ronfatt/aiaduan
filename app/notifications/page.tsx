@@ -73,13 +73,13 @@ export default function NotificationsPage() {
         <section className="mt-4 rounded-[24px] border border-amber-200 bg-amber-50/80 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">Proactive Public Broadcast</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">Siaran Awam Proaktif</p>
               <h3 className="mt-1 text-lg font-extrabold text-slate-900">
                 Sistem boleh mencetus amaran awam sebelum lebih banyak aduan masuk.
               </h3>
             </div>
             <span className="badge border border-amber-300 bg-white text-amber-700">
-              {broadcasts.length} active broadcasts
+              {broadcasts.length} siaran aktif
             </span>
           </div>
 

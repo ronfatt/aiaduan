@@ -38,8 +38,8 @@ export function TopNav() {
 
   const desktopLinks = [
     ...publicLinks,
-    { href: "/admin", label: "Department Workspace" },
-    { href: "/president", label: "President Dashboard" },
+    { href: "/admin", label: "Ruang Kerja Jabatan" },
+    { href: "/president", label: "Papan Pemuka Presiden" },
   ];
 
   return (
@@ -49,7 +49,7 @@ export function TopNav() {
           <div className="min-w-0">
             <p className="truncate text-xl font-extrabold text-white sm:text-2xl">e-Aduan Tawau AI</p>
           <span className="mt-1 inline-flex rounded bg-blue-900/50 px-2 py-0.5 text-xs font-bold text-cyan-200">
-            Demo Prototype
+            Prototaip Demo
           </span>
           </div>
 
@@ -67,7 +67,7 @@ export function TopNav() {
               aria-label="Toggle navigation"
               onClick={() => setMenuOpen((value) => !value)}
             >
-              {menuOpen ? "Close" : "Menu"}
+              {menuOpen ? "Tutup" : "Menu"}
             </button>
           </div>
         </div>
@@ -129,7 +129,7 @@ export function TopNav() {
         {menuOpen ? (
           <div className="mt-3 grid gap-2 rounded-2xl border border-white/15 bg-white/8 p-3 sm:hidden">
             <div className="grid gap-2">
-              <p className="px-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-200">Citizen</p>
+              <p className="px-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-200">Orang Awam</p>
               {publicLinks
                 .filter((item) => item.href !== "/submit")
                 .map((item) => {
@@ -150,7 +150,7 @@ export function TopNav() {
             </div>
 
             <div className="grid gap-2 border-t border-white/10 pt-3">
-              <p className="px-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-200">Department Workspace</p>
+              <p className="px-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-200">Ruang Kerja Jabatan</p>
               {departmentLinks.map((item) => {
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (
@@ -169,7 +169,7 @@ export function TopNav() {
             </div>
 
             <div className="grid gap-2 border-t border-white/10 pt-3">
-              <p className="px-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-200">President Dashboard</p>
+              <p className="px-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cyan-200">Papan Pemuka Presiden</p>
               {leadershipLinks.map((item) => {
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (

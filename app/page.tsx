@@ -202,44 +202,44 @@ export default function HomePage() {
 
       <section className="grid gap-3 lg:grid-cols-3">
         <article className="panel border-blue-200 bg-white">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-800">大众用户</p>
-          <h2 className="mt-2 text-xl font-black text-slate-900">报修与追踪</h2>
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-800">Orang Awam</p>
+          <h2 className="mt-2 text-xl font-black text-slate-900">Hantar & Jejak Aduan</h2>
           <p className="mt-2 text-sm text-slate-600">
-            手机快速投诉、WhatsApp AI intake、实时进度查询。目标是让大众 30 秒内完成报修。
+            Aduan pantas melalui telefon, WhatsApp AI, dan semakan status masa nyata. Sasaran utama ialah warga boleh melapor dalam 30 saat.
           </p>
           <div className="mt-4 grid gap-2">
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-              AI 作用: 自动分类、自动分流、自动生成 tracking
+              Peranan AI: klasifikasi automatik, penghalaan automatik, dan kod jejak automatik
             </div>
-            <Link href="/submit" className="btn-primary text-center">进入公众入口</Link>
+            <Link href="/submit" className="btn-primary text-center">Masuk Pintu Awam</Link>
           </div>
         </article>
 
         <article className="panel border-indigo-200 bg-white">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-indigo-800">部门内部</p>
-          <h2 className="mt-2 text-xl font-black text-slate-900">Department Workspace</h2>
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-indigo-800">Jabatan Dalaman</p>
+          <h2 className="mt-2 text-xl font-black text-slate-900">Ruang Kerja Jabatan</h2>
           <p className="mt-2 text-sm text-slate-600">
-            工单队列、分派、现场更新、通知与报表集中在一个内部工作区，减少页面切换成本。
+            Barisan kes, tugasan, kemas kini lapangan, notifikasi dan laporan dihimpunkan dalam satu ruang kerja dalaman.
           </p>
           <div className="mt-4 grid gap-2">
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-              AI 作用: 风险排序、重复案件识别、SLA 升级、处置建议
+              Peranan AI: susunan risiko, pengesanan kes berulang, eskalasi SLA, dan cadangan tindakan
             </div>
-            <Link href="/admin" className="btn-primary text-center">进入部门工作台</Link>
+            <Link href="/admin" className="btn-primary text-center">Masuk Ruang Kerja Jabatan</Link>
           </div>
         </article>
 
         <article className="panel border-amber-200 bg-white">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-800">主席端</p>
-          <h2 className="mt-2 text-xl font-black text-slate-900">President Dashboard</h2>
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-800">Kepimpinan</p>
+          <h2 className="mt-2 text-xl font-black text-slate-900">Papan Pemuka Presiden</h2>
           <p className="mt-2 text-sm text-slate-600">
-            聚焦城市风险、资源压力、逾期案件与每周简报，让高层看到 AI 如何辅助决策而不是翻工单。
+            Tumpu pada risiko bandar, tekanan sumber, kes lewat dan ringkasan mingguan supaya kepimpinan boleh membuat keputusan dengan pantas.
           </p>
           <div className="mt-4 grid gap-2">
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-              AI 作用: 风险预测、资源调度、广播建议、领导简报
+              Peranan AI: ramalan risiko, cadangan sumber, syor siaran awam, dan ringkasan kepimpinan
             </div>
-            <Link href="/president" className="btn-primary text-center">进入主席视图</Link>
+            <Link href="/president" className="btn-primary text-center">Masuk Paparan Presiden</Link>
           </div>
         </article>
       </section>
@@ -312,7 +312,7 @@ export default function HomePage() {
         <div className="city-index-ring" style={{ background: `conic-gradient(#00c2ff ${cityIndex.value * 3.6}deg, rgba(148,163,184,0.25) 0deg)` }}>
           <div className="city-index-core">
             <p className="text-3xl font-black text-cyan-100">{cityIndex.value} / 100</p>
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-blue-200">City Intelligence Index</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-blue-200">Indeks Kecerdasan Bandar</p>
           </div>
         </div>
         <p className="mt-3 text-sm font-semibold text-cyan-100">{cityIndex.status}</p>

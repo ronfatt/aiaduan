@@ -60,12 +60,12 @@ export default function AssistantDemoPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl">
-      <PublicAppHeader title="WhatsApp Aduan" subtitle="Hantar mesej atau voice note" />
+      <PublicAppHeader title="WhatsApp Aduan" subtitle="Hantar mesej atau rakaman suara" />
 
       <section className="panel">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-700">Chat Intake Demo</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-700">Demo Penerimaan Chat</p>
             <h1 className="mt-1 text-2xl font-black text-slate-900">Aduan melalui WhatsApp</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600">
               Hantar mesej atau voice note. Sistem akan baca, faham, dan sediakan aduan secara automatik.
@@ -88,7 +88,7 @@ export default function AssistantDemoPage() {
               }`}
               onClick={() => setSelectedId(scenario.id)}
             >
-              {scenario.title}
+              {scenario.id === "streetlight" ? "Rakaman Suara: Lampu Awam" : scenario.id === "drain" ? "Mesej WhatsApp: Longkang" : "Rakaman Cina: Sampah"}
             </button>
           ))}
         </div>
@@ -102,7 +102,7 @@ export default function AssistantDemoPage() {
                 <p className="text-sm font-extrabold">e-Aduan Tawau Bot</p>
                 <p className="text-xs font-medium text-emerald-100">WhatsApp / Voice Intake</p>
               </div>
-              <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold">CHAT DEMO</span>
+              <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold">DEMO CHAT</span>
             </div>
 
             <div className="grid gap-3 bg-[#f3fbf5] p-4">
@@ -110,7 +110,7 @@ export default function AssistantDemoPage() {
                 {selected.userLine}
               </div>
               <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                <p className="font-bold text-slate-900">AI Transcript</p>
+                <p className="font-bold text-slate-900">Transkrip AI</p>
                 <p className="mt-1">{selected.transcript}</p>
               </div>
               <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-slate-700">
@@ -127,12 +127,12 @@ export default function AssistantDemoPage() {
           <article className="panel border-cyan-200 bg-cyan-50/70">
             <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-cyan-800">Ringkasan Bot</p>
             <div className="mt-3 grid gap-2 text-sm text-slate-700">
-              <p><span className="font-semibold">Detected Language:</span> {selected.language}</p>
-              <p><span className="font-semibold">Transcript Confidence:</span> 94%</p>
-              <p><span className="font-semibold">Suggested Zone:</span> {selected.zone}</p>
-              <p><span className="font-semibold">Official Category:</span> {triage.rasmiJenisAduanSuggestion}</p>
-              <p><span className="font-semibold">Department:</span> {mapOfficialJenisToDepartment(triage.rasmiJenisAduanSuggestion)}</p>
-              <p><span className="font-semibold">Urgency:</span> {triage.urgency}</p>
+              <p><span className="font-semibold">Bahasa Dikesan:</span> {selected.language}</p>
+              <p><span className="font-semibold">Keyakinan Transkrip:</span> 94%</p>
+              <p><span className="font-semibold">Zon Dicadangkan:</span> {selected.zone}</p>
+              <p><span className="font-semibold">Kategori Rasmi:</span> {triage.rasmiJenisAduanSuggestion}</p>
+              <p><span className="font-semibold">Jabatan:</span> {mapOfficialJenisToDepartment(triage.rasmiJenisAduanSuggestion)}</p>
+              <p><span className="font-semibold">Keutamaan:</span> {triage.urgency}</p>
               <p><span className="font-semibold">ETA:</span> {triage.eta_hours}h</p>
             </div>
           </article>
@@ -144,7 +144,7 @@ export default function AssistantDemoPage() {
               <pre className="mt-3 overflow-auto text-xs text-slate-700">
 {JSON.stringify(
   {
-    channel: "WhatsApp Voice Bot",
+                    channel: "Bot Suara WhatsApp",
     zone: selected.zone,
     transcript: selected.transcript,
     aiCategory: triage.category,

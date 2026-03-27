@@ -35,7 +35,7 @@ export default function TrackPage() {
   if (!complaint) {
     return (
       <section className="panel">
-        <h2 className="text-xl font-extrabold text-slate-900">Tracking ID tidak ditemui</h2>
+        <h2 className="text-xl font-extrabold text-slate-900">Kod Jejak tidak ditemui</h2>
         <p className="mt-2 text-slate-700">Tiada aduan dengan ID {params.id}.</p>
         <Link href="/submit" className="btn-primary mt-4 inline-flex">
           Hantar Aduan
@@ -57,21 +57,21 @@ export default function TrackPage() {
         <p className="mt-2 text-sm text-slate-700">Aduan anda telah diterima dan dihantar kepada jabatan berkaitan.</p>
 
         <div className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-          <p><span className="font-semibold">Tracking ID:</span> {complaint.id}</p>
+          <p><span className="font-semibold">Kod Jejak:</span> {complaint.id}</p>
           <p><span className="font-semibold">Kategori Rasmi:</span> {complaint.rasmiJenisAduan}</p>
           <p><span className="font-semibold">Jabatan:</span> {complaint.department}</p>
           <p><span className="font-semibold">Anggaran Masa:</span> {complaint.aiEtaHours || 48} jam</p>
-          <p><span className="font-semibold">SLA Escalation:</span> {complaint.slaEscalationLevel}</p>
+          <p><span className="font-semibold">Eskalasi SLA:</span> {complaint.slaEscalationLevel}</p>
         </div>
 
         <details className="mt-3 rounded border border-slate-200 bg-white p-3">
           <summary className="cursor-pointer text-sm font-semibold text-slate-700">Lihat Analisis AI</summary>
           <div className="mt-2 grid gap-1 text-sm text-slate-700">
-            <p><span className="font-semibold">AI Category:</span> {complaint.aiCategory}</p>
-            <p><span className="font-semibold">AI Urgency:</span> {complaint.aiUrgency}</p>
-            <p><span className="font-semibold">AI Confidence:</span> {Math.round(complaint.aiConfidence * 100)}%</p>
-            <p><span className="font-semibold">AI Summary:</span> {complaint.aiSummary}</p>
-            <p><span className="font-semibold">Reasoning:</span> {complaint.aiReasoning}</p>
+            <p><span className="font-semibold">Kategori AI:</span> {complaint.aiCategory}</p>
+            <p><span className="font-semibold">Keutamaan AI:</span> {complaint.aiUrgency}</p>
+            <p><span className="font-semibold">Keyakinan AI:</span> {Math.round(complaint.aiConfidence * 100)}%</p>
+            <p><span className="font-semibold">Ringkasan AI:</span> {complaint.aiSummary}</p>
+            <p><span className="font-semibold">Sebab:</span> {complaint.aiReasoning}</p>
           </div>
         </details>
       </section>
@@ -111,7 +111,7 @@ export default function TrackPage() {
             </p>
           </div>
           <span className="badge border border-blue-200 bg-blue-50 text-blue-700">
-            {liveTracking.progressPct}% complete
+            {liveTracking.progressPct}% siap
           </span>
         </div>
 
@@ -126,7 +126,7 @@ export default function TrackPage() {
           <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-700">Status Terkini</p>
           <p className="mt-1 text-sm font-semibold text-blue-900">{liveTracking.driverStyleLine}</p>
           <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-            Next update in {liveTracking.nextUpdateHours}h
+            Kemas kini seterusnya dalam {liveTracking.nextUpdateHours}j
           </p>
         </div>
 
@@ -185,7 +185,7 @@ export default function TrackPage() {
           <Link href="/" className="btn-primary text-center">Kembali ke Laman Utama</Link>
           {complaint.status === "DONE" ? (
             <button className="btn-secondary w-full sm:w-auto" onClick={() => reopenComplaint(complaint.id, "Citizen requested reopen from tracking page.")}>
-              Reopen Case
+              Buka Semula Kes
             </button>
           ) : null}
         </div>
@@ -214,7 +214,7 @@ export default function TrackPage() {
               }}
             >
               <label className="field">
-                Rating (1-5)
+                Penilaian (1-5)
                 <select value={rating} onChange={(e) => setRating(Number(e.target.value) as 1 | 2 | 3 | 4 | 5)}>
                   <option value={1}>1</option>
                   <option value={2}>2</option>
