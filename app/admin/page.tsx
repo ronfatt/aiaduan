@@ -4,6 +4,7 @@ import { CSSProperties, useEffect, useMemo, useState } from "react";
 import { AdminSideNav } from "@/components/AdminSideNav";
 import { CategoryBadge, StatusBadge, UrgencyBadge } from "@/components/Badges";
 import { CountUp } from "@/components/CountUp";
+import { OpsAiAssistant } from "@/components/OpsAiAssistant";
 import { getAdminAiAction, getSimilarCaseStats } from "@/lib/aiIntel";
 import { useStore } from "@/lib/store";
 import {
@@ -207,6 +208,10 @@ export default function AdminPage() {
               <span className="admin-live-pill">Purata Risiko: {queueStats.avgRisk}</span>
             </div>
           </div>
+        </div>
+
+        <div className="mt-4">
+          <OpsAiAssistant scope="department" complaints={complaints} />
         </div>
 
         <div className="mt-4 grid gap-2 md:grid-cols-4" hidden={mode === "LEADERSHIP"}>
