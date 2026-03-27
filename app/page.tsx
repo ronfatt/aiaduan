@@ -127,32 +127,32 @@ export default function HomePage() {
     <div className="grid gap-4">
       <section className="panel neural-grid overflow-hidden lg:grid lg:grid-cols-2 lg:items-center">
         <div className="relative z-10 text-center sm:text-left">
-          <p className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-blue-900 sm:hidden">
-            Aduan Awam
+          <p className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.18em] text-blue-900">
+            Aduan Pintar Tawau
           </p>
-          <h1 className="mt-3 text-3xl font-black leading-tight text-[#0B1F3B] sm:text-4xl">Ada Masalah di Tawau?<br />Kami Bertindak.</h1>
+          <h1 className="mt-3 text-3xl font-black leading-tight text-[#0B1F3B] sm:text-4xl">
+            Ada Masalah di Tawau?
+            <br />
+            Kami Bertindak.
+          </h1>
           <p className="mt-3 text-base font-semibold text-[#1d4ed8] sm:text-lg">
             Laporkan dalam 30 saat.
             <br />
-            Sistem AI akan terus menilai dan menghantar kepada jabatan berkaitan - tanpa birokrasi yang rumit.
+            AI akan terus hantar ke jabatan berkaitan.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link href="/submit" className="hero-main-cta">HANTAR ADUAN SEKARANG</Link>
-            <Link href="/track" className="hero-secondary-cta mobile-track-btn">Semak Status Aduan</Link>
+            <Link href="/track" className="hero-secondary-cta mobile-track-btn">Semak Status</Link>
           </div>
           <div className="mt-3 hidden flex-col gap-2 sm:flex-row sm:flex">
             <Link href="/assistant" className="hero-secondary-cta text-center">
-              WhatsApp / Voice Bot Demo
+              WhatsApp AI
             </Link>
           </div>
           <p className="mt-3 text-sm font-semibold text-slate-700">Cepat • Mudah • Telus</p>
-          <div className="mt-3 grid gap-2 sm:hidden">
-            <div className="rounded-2xl border border-blue-100 bg-blue-50/80 px-4 py-3 text-left shadow-sm">
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-800">3 Langkah Mudah</p>
-              <p className="mt-1 text-sm font-semibold text-slate-800">Terangkan masalah, pilih lokasi, kemudian hantar.</p>
-            </div>
-          </div>
-          <p className="mt-2 max-w-xl text-xs font-medium text-slate-500">Platform sokongan keputusan bandar berasaskan AI pertama di Tawau.</p>
+          <p className="mt-2 max-w-xl text-xs font-medium text-slate-500">
+            Platform sokongan keputusan bandar berasaskan AI pertama di Tawau.
+          </p>
         </div>
 
         <aside className="mt-6 hidden lg:block">
@@ -169,38 +169,77 @@ export default function HomePage() {
       </section>
 
       <section className="grid gap-3 sm:hidden">
-        <article className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm">
+        <article className="rounded-[28px] border border-blue-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Akses Pantas</p>
-          <div className="mt-3 grid gap-3">
+          <div className="mt-3 grid grid-cols-1 gap-3">
             <Link
               href="/submit"
-              className="rounded-[20px] bg-gradient-to-b from-blue-600 to-blue-800 px-4 py-5 text-center text-lg font-extrabold text-white shadow-lg"
+              className="rounded-[22px] bg-gradient-to-b from-blue-500 to-blue-700 px-4 py-5 text-center text-lg font-extrabold text-white shadow-lg"
             >
-              🚨 Hantar Aduan
+              📸 Hantar Aduan
             </Link>
-            <Link
-              href="/track"
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-center text-base font-bold text-slate-800"
-            >
-              Semak Aduan
-            </Link>
-            <Link
-              href="/assistant"
-              className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-center text-base font-bold text-emerald-800"
-            >
-              WhatsApp / Voice Bot
-            </Link>
-          </div>
-          <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-500">Untuk Orang Awam</p>
-            <p className="mt-1 text-sm text-slate-700">
-              Pilih satu cara paling mudah untuk lapor atau semak status aduan anda.
-            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <Link
+                href="/track"
+                className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 text-center text-base font-bold text-slate-800"
+              >
+                🔍 Semak Status
+              </Link>
+              <Link
+                href="/assistant"
+                className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-center text-base font-bold text-emerald-800"
+              >
+                💬 WhatsApp AI
+              </Link>
+            </div>
           </div>
         </article>
       </section>
 
-      <section className="grid gap-3 lg:grid-cols-3">
+      <section className="grid gap-3 sm:hidden">
+        <article className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-slate-500">Cara Guna</p>
+          <div className="mt-4 grid gap-3">
+            {[
+              {
+                step: "1",
+                title: "Ambil gambar atau terangkan masalah",
+                desc: "Masukkan aduan dengan cepat melalui borang atau WhatsApp AI.",
+              },
+              {
+                step: "2",
+                title: "AI kenal pasti isu",
+                desc: "Sistem cadangkan kategori rasmi, jabatan, dan keutamaan.",
+              },
+              {
+                step: "3",
+                title: "Pihak berkuasa bertindak",
+                desc: "Aduan terus masuk ke ruang kerja jabatan untuk tindakan lanjut.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="flex items-start gap-3 rounded-[22px] border border-slate-100 bg-slate-50 px-4 py-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">
+                  {item.step}
+                </div>
+                <div>
+                  <p className="text-sm font-extrabold text-slate-900">{item.title}</p>
+                  <p className="mt-1 text-sm text-slate-600">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
+
+      <section className="grid gap-3 sm:hidden">
+        <article className="rounded-[28px] border border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 shadow-sm">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-800">Dipercayai Untuk Demo</p>
+          <p className="mt-2 text-base font-black text-slate-900">Platform aduan pintar untuk operasi bandar Tawau.</p>
+          <p className="mt-2 text-sm text-slate-700">Demo pengalaman awam, ruang kerja jabatan, dan papan pemuka kepimpinan dalam satu sistem berasaskan AI.</p>
+        </article>
+      </section>
+
+      <section className="hidden gap-3 lg:grid-cols-3 sm:grid">
         <article className="panel border-blue-200 bg-white">
           <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-800">Orang Awam</p>
           <h2 className="mt-2 text-xl font-black text-slate-900">Hantar & Jejak Aduan</h2>
